@@ -1,0 +1,32 @@
+id = "suleymanyaryev.ghostty-badge"
+name = "Ghostty badge"
+version = "0.1.0"
+min_herdr_version = "0.9.5"
+description = "Ring the bell (Ghostty dock badge) when an agent is blocked or done, and show the waiting count in the window title"
+platforms = ["macos"]
+
+# Commands run with the plugin root as cwd.
+
+[[startup]]
+command = ["sh", "bin/badge.sh", "refresh"]
+
+[[events]]
+on = "pane.agent_status_changed"
+command = ["sh", "bin/badge.sh", "status"]
+
+# Keep the count right when waiting panes go away or get visited.
+[[events]]
+on = "pane.closed"
+command = ["sh", "bin/badge.sh", "refresh"]
+
+[[events]]
+on = "pane.exited"
+command = ["sh", "bin/badge.sh", "refresh"]
+
+[[events]]
+on = "pane.agent_detected"
+command = ["sh", "bin/badge.sh", "refresh"]
+
+[[events]]
+on = "pane.focused"
+command = ["sh", "bin/badge.sh", "refresh"]

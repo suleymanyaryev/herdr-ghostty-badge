@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: ShellCheck
+        run: shellcheck bin/*.sh
+
+      - name: Validate manifest
+        run: |
+          python3 - <<'EOF'
+          import tomllib
+
+          with open("herdr-plugin.toml", "rb") as f:
+              m = tomllib.load(f)
+          for key in ("id", "name", "version", "min_herdr_version"):
+              assert m.get(key), f"manifest is missing {key}"
+          for item in m.get("startup", []) + m.get("events", []):
+              assert item.get("command"), f"empty command in {item}"
+          print(f"{m['id']} {m['version']} ok")
+          EOF
